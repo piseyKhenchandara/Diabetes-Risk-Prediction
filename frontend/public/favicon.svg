@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" role="img" aria-label="Diabetes Dashboard Icon">
+  <rect width="64" height="64" rx="12" fill="#0f67b1"/>
+  <path d="M32 12c6.5 0 10 4.1 10 9.2 0 6.4-5.8 10.7-9.3 14.7-2 2.3-2.7 4.3-2.7 6.6v3.5h-8v-3.5c0-4.3 1.4-7.7 4.5-11.3 3.4-4 8.5-7.1 8.5-10.8 0-1.7-1.2-2.9-3-2.9-2.1 0-3.4 1.4-3.8 3.8l-7.8-1.1C21.2 14.8 25.5 12 32 12z" fill="#ffffff"/>
+  <circle cx="32" cy="52" r="4" fill="#ffffff"/>
+</svg>
