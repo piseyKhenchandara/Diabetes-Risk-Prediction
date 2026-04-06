@@ -35,8 +35,7 @@ __pycache__/
 venv/
 env/
 
-# Data science/model artifacts (optional - keep large generated files out)
+# Data science/model artifacts
 *.pkl
-*.joblib
 *.h5
 *.ipynb_checkpoints/
