@@ -7,8 +7,8 @@ app = Flask(__name__)
 
 # --- Load model artifacts ---
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-model = joblib.load(os.path.join(BASE_DIR, "logistic_regression_model.joblib"))
-scaler = joblib.load(os.path.join(BASE_DIR, "standard_scaler.joblib"))
+model = joblib.load(os.path.join(BASE_DIR, "xgboot_model.joblib"))
+scaler = joblib.load(os.path.join(BASE_DIR, "standard_scaler_v2.joblib"))
 
 # Must match the exact column order used during training
 FEATURE_NAMES = [
@@ -59,9 +59,12 @@ def predict():
     probabilities = model.predict_proba(scaled_vector)[0]
     risk_percent = round(float(probabilities[1]) * 100, 2)
 
-    # Compute per-feature contribution: coefficient * scaled_value
-    coefficients = model.coef_[0]
-    contributions = scaled_vector[0] * coefficients
+    # Compute per-feature contribution: feature_importances_ * scaled_value
+    # (XGBoost uses feature_importances_; logistic regression used model.coef_[0])
+    # coefficients = model.coef_[0]
+    # contributions = scaled_vector[0] * coefficients
+    importances = model.feature_importances_
+    contributions = scaled_vector[0] * importances
 
     contributors = [
         {
@@ -85,7 +88,7 @@ def predict():
         "riskPercent": risk_percent,
         "topContributors": top_contributors,
         "reasonSummary": reason_summary,
-        "explanation": f"Logistic Regression model — {risk_percent}% probability of diabetes.",
+        "explanation": f"XGBoost model — {risk_percent}% probability of diabetes.",
     })
 
 
