@@ -1,61 +1,37 @@
-# Production — all services behind nginx
+# Production — API services behind nginx
+# Frontend is deployed separately on Cloudflare Pages
 # Usage: docker compose up --build
 
 services:
-
-  nginx:
-    build:
-      context: .
-      dockerfile: nginx/Dockerfile
-    ports:
-      - "80:80"
-    depends_on:
-      - backend
-    restart: unless-stopped
 
   backend:
     build:
       context: ./backend
       dockerfile: Dockerfile
+    container_name: diabetes_backend
     expose:
       - "5000"
     environment:
       PORT: 5000
-      FRONTEND_ORIGIN: http://nginx
-      PYTHON_SERVICE_URL: http://ml:5001
-      DATABASE_URL: postgresql://postgres:${POSTGRES_PASSWORD:-postgres}@db:5432/diabetes
+      FRONTEND_ORIGIN: ${FRONTEND_ORIGIN}   # your Cloudflare Pages URL
+      PYTHON_SERVICE_URL: http://diabetes_ml:5001
     depends_on:
-      db:
-        condition: service_healthy
-      ml:
-        condition: service_started
+      - ml
+    networks:
+      - lcms_network
     restart: unless-stopped
 
   ml:
     build:
       context: ./backend/ml
       dockerfile: Dockerfile
+    container_name: diabetes_ml
     expose:
       - "5001"
+    networks:
+      - lcms_network
     restart: unless-stopped
 
-  db:
-    image: postgres:16-alpine
-    expose:
-      - "5432"
-    environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      POSTGRES_DB: diabetes
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./backend/src/db/schema.sql:/docker-entrypoint-initdb.d/schema.sql
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U postgres"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
-    restart: unless-stopped
-
-volumes:
-  postgres_data:
+networks:
+  lcms_network:
+    external: true
