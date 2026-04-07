@@ -82,7 +82,14 @@ h1 {
 .form-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
-  gap: 12px;
+  gap: 20px;
+}
+
+.body-row {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 20px;
 }
 
 .field {
@@ -92,6 +99,10 @@ h1 {
   color: var(--muted);
   font-weight: 600;
   font-size: 0.95rem;
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 14px;
 }
 
 .field-label {
@@ -118,6 +129,25 @@ h1 {
 .field input:focus {
   border-color: var(--brand);
   outline: 2px solid rgba(15, 103, 177, 0.12);
+}
+
+.field input.input--error {
+  border-color: #e53e3e;
+  outline: 2px solid rgba(229, 62, 62, 0.12);
+}
+
+.field-error {
+  color: #e53e3e;
+  font-size: 0.78rem;
+  font-weight: 500;
+  margin-top: -3px;
+}
+
+.bmi-preview {
+  color: var(--brand);
+  font-size: 0.82rem;
+  font-weight: 600;
+  margin-top: -3px;
 }
 
 .actions {
@@ -252,6 +282,10 @@ button.ghost {
   }
 
   .form-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .body-row {
     grid-template-columns: 1fr;
   }
 }
