@@ -42,8 +42,8 @@ export function validatePredictionInput(body) {
   };
 
   validateRange(cleaned.pregnancies, "pregnancies", 0, 20);
-  validateRange(cleaned.bloodPressure, "bloodPressure", 20, 150);
-  validateRange(cleaned.glucose, "glucose", 20, 300);
+  validateRange(cleaned.bloodPressure, "bloodPressure", 1, 200);
+  validateRange(cleaned.glucose, "glucose", 1, 500);
   validateRange(cleaned.skinThickness, "skinThickness", 0, 100);
   validateRange(cleaned.insulin, "insulin", 0, 900);
   validateRange(cleaned.bmi, "bmi", 10, 70);
