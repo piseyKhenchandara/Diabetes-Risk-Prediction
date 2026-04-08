@@ -59,12 +59,9 @@ def predict():
     probabilities = model.predict_proba(scaled_vector)[0]
     risk_percent = round(float(probabilities[1]) * 100, 2)
 
-    # Compute per-feature contribution: feature_importances_ * scaled_value
-    # (XGBoost uses feature_importances_; logistic regression used model.coef_[0])
-    # coefficients = model.coef_[0]
-    # contributions = scaled_vector[0] * coefficients
-    importances = model.feature_importances_
-    contributions = scaled_vector[0] * importances
+    # Compute per-feature contribution: coefficient * scaled_value
+    coefficients = model.coef_[0]
+    contributions = scaled_vector[0] * coefficients
 
     contributors = [
         {
@@ -88,7 +85,7 @@ def predict():
         "riskPercent": risk_percent,
         "topContributors": top_contributors,
         "reasonSummary": reason_summary,
-        "explanation": f"XGBoost model — {risk_percent}% probability of diabetes.",
+        "explanation": f"Logistic Regression model — {risk_percent}% probability of diabetes.",
     })
 
 
