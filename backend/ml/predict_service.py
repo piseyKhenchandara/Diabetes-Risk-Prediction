@@ -51,23 +51,28 @@ def predict():
     except (KeyError, TypeError, ValueError) as e:
         return jsonify({"error": f"Invalid input: {e}"}), 400
 
-    # Scale the input
-    scaled_vector = scaler.transform(feature_vector)
+    # XGBoost is tree-based and was trained on raw unscaled data — do NOT scale before prediction.
+    # Use scaler only to compute z-scores for contribution display.
+    import warnings
+    with warnings.catch_warnings():
+        warnings.simplefilter("ignore")
+        z_scores = np.abs(scaler.transform(feature_vector)[0])
 
-    # Predict
-    prediction = int(model.predict(scaled_vector)[0])
-    probabilities = model.predict_proba(scaled_vector)[0]
+    # Predict on raw (unscaled) feature vector
+    prediction = int(model.predict(feature_vector)[0])
+    probabilities = model.predict_proba(feature_vector)[0]
     risk_percent = round(float(probabilities[1]) * 100, 2)
 
-    # Compute per-feature contribution: coefficient * scaled_value
-    coefficients = model.coef_[0]
-    contributions = scaled_vector[0] * coefficients
+    # Compute per-feature contribution: feature_importance * z_score
+    # (how globally important the feature is × how unusual this patient's value is)
+    feature_importances = model.feature_importances_
+    contributions = z_scores * feature_importances
 
     contributors = [
         {
             "label": FEATURE_NAMES[i],
             "value": round(feature_vector[0][i], 4),
-            "contribution": round(float(abs(contributions[i])), 4),
+            "contribution": round(float(contributions[i]), 4),
         }
         for i in range(len(FEATURE_NAMES))
     ]
@@ -85,7 +90,7 @@ def predict():
         "riskPercent": risk_percent,
         "topContributors": top_contributors,
         "reasonSummary": reason_summary,
-        "explanation": f"Logistic Regression model — {risk_percent}% probability of diabetes.",
+        "explanation": f"XGBoost model — {risk_percent}% probability of diabetes.",
     })
 
 
